@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kenya Capital Cities Map with Details</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+      .container {
+        height: 100%;
+        margin: 0;
+        display: flex;
+      }
+
+      #map {
+        flex: 2;
+        height: 100vh;
+        width: 66vw;
+      }
+
+      #city-details {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        background-color: #f0f0f0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .city-info {
+        display: none;
+      }
+
+      .city-info.active {
+        display: block;
+        margin-bottom: 20px;
+      }
+
+      .legend {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background-color: white;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        z-index: 1000;
+      }
+
+      .legend-item {
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+      }
+
+      .legend-item span {
+        display: inline-block;
+        width: 15px;
+        height: 15px;
+        margin-right: 5px;
+        border: 1px solid #000;
+      }
+
+      .dot {
+        border-radius: 50%;
+        background-color: #3388ff;
+      }
+
+      .square {
+        background-color: #ff9933;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Cities and Towns details</h1>
+    <p>Click on the dot or square</p>
+    <div class="container">
+      <div id="map"></div>
+
+      <div id="city-details">
+        <h3>City Details</h3>
+        <div id="city-info-nairobi" class="city-info">
+          <h4>Nairobi</h4>
+          <p><strong>Population:</strong> 4,397,073</p>
+          <p>
+            <strong>Major Tourist Attraction:</strong> Nairobi National Park,
+            David Sheldrick Wildlife Trust, Giraffe Centre
+          </p>
+          <p>
+            <strong>Modes of Transport:</strong> Matatus, Buses, Taxis, Uber,
+            Boda Bodas (motorcycles)
+          </p>
+          <p>
+            <strong>Main Economic Activities:</strong> Finance, Real Estate,
+            Trade, Manufacturing, Tourism
+          </p>
+        </div>
+        <div id="city-info-mombasa" class="city-info">
+          <h4>Mombasa</h4>
+          <p><strong>Population:</strong> 1,208,333</p>
+          <p>
+            <strong>Major Tourist Attraction:</strong> Fort Jesus, Old Town,
+            Mombasa Marine National Park
+          </p>
+          <p>
+            <strong>Modes of Transport:</strong> Matatus, Taxis, Ferries, Boda
+            Bodas, Tuk Tuks
+          </p>
+          <p>
+            <strong>Main Economic Activities:</strong> Shipping, Tourism,
+            Manufacturing, Fishing, Trade
+          </p>
+        </div>
+        <div id="city-info-kisumu" class="city-info">
+          <h4>Kisumu</h4>
+          <p><strong>Population:</strong> 500,000</p>
+          <p>
+            <strong>Major Tourist Attraction:</strong> Kisumu Impala Sanctuary,
+            Lake Victoria
+          </p>
+          <p>
+            <strong>Modes of Transport:</strong> Matatus, Boda Bodas, Taxis,
+            Ferries
+          </p>
+          <p>
+            <strong>Main Economic Activities:</strong> Fishing, Trade,
+            Agriculture, Manufacturing, Tourism
+          </p>
+        </div>
+        <div id="city-info-nakuru" class="city-info">
+          <h4>Nakuru</h4>
+          <p><strong>Population:</strong> 570,674</p>
+          <p>
+            <strong>Major Tourist Attraction:</strong> Lake Nakuru National
+            Park, Menengai Crater
+          </p>
+          <p>
+            <strong>Modes of Transport:</strong> Matatus, Taxis, Boda Bodas,
+            Private Cars
+          </p>
+          <p>
+            <strong>Main Economic Activities:</strong> Agriculture, Tourism,
+            Manufacturing, Retail, Services
+          </p>
+        </div>
+        <div id="city-info-eldoret" class="city-info">
+          <h4>Eldoret</h4>
+          <p><strong>Population:</strong> 289,380</p>
+          <p>
+            <strong>Major Tourist Attraction:</strong> Iten (Training ground for
+            Kenyan athletes), Eldoret Museum
+          </p>
+          <p>
+            <strong>Modes of Transport:</strong> Matatus, Taxis, Boda Bodas,
+            Private Cars
+          </p>
+          <p>
+            <strong>Main Economic Activities:</strong> Agriculture, Trade,
+            Education, Healthcare, Services
+          </p>
+        </div>
+        <div id="city-info-thika" class="city-info">
+          <h4>Thika</h4>
+          <p><strong>Population:</strong> 288,000</p>
+          <p>
+            <strong>Major Tourist Attraction:</strong> Chania Falls, Thika Town
+            Clock Tower
+          </p>
+          <p>
+            <strong>Modes of Transport:</strong> Matatus, Taxis, Boda Bodas,
+            Private Cars
+          </p>
+          <p>
+            <strong>Main Economic Activities:</strong> Industry (manufacturing),
+            Agriculture, Trade, Services, Retail
+          </p>
+        </div>
+        <div id="city-info-malindi" class="city-info">
+          <h4>Malindi</h4>
+          <p><strong>Population:</strong> 207,253</p>
+          <p>
+            <strong>Major Tourist Attraction:</strong> Malindi Marine National
+            Park, Watamu Beach, Gedi Ruins
+          </p>
+          <p>
+            <strong>Modes of Transport:</strong> Matatus, Taxis, Boda Bodas,
+            Rickshaws
+          </p>
+          <p>
+            <strong>Main Economic Activities:</strong> Tourism, Fishing,
+            Agriculture, Retail, Hospitality
+          </p>
+        </div>
+        <div id="city-info-kitale" class="city-info">
+          <h4>Kitale</h4>
+          <p><strong>Population:</strong> 175,000</p>
+          <p>
+            <strong>Major Tourist Attraction:</strong> Saiwa Swamp National
+            Park, Kitale Museum
+          </p>
+          <p>
+            <strong>Modes of Transport:</strong> Matatus, Taxis, Boda Bodas,
+            Private Cars
+          </p>
+          <p>
+            <strong>Main Economic Activities:</strong> Agriculture (dairy
+            farming), Trade, Services, Manufacturing, Retail
+          </p>
+        </div>
+        <div id="city-info-garissa" class="city-info">
+          <h4>Garissa</h4>
+          <p><strong>Population:</strong> 163,149</p>
+          <p>
+            <strong>Major Tourist Attraction:</strong> Garissa County Museum,
+            Tana River
+          </p>
+          <p>
+            <strong>Modes of Transport:</strong> Matatus, Taxis, Boda Bodas,
+            Camels
+          </p>
+          <p>
+            <strong>Main Economic Activities:</strong> Trade, Livestock Farming,
+            Agriculture, Services, Retail
+          </p>
+        </div>
+        <div id="city-info-kakamega" class="city-info">
+          <h4>Kakamega</h4>
+          <p><strong>Population:</strong> 139,171</p>
+          <p>
+            <strong>Major Tourist Attraction:</strong> Kakamega Forest, Crying
+            Stone of Ilesi
+          </p>
+          <p>
+            <strong>Modes of Transport:</strong> Matatus, Taxis, Boda Bodas,
+            Private Cars
+          </p>
+          <p>
+            <strong>Main Economic Activities:</strong> Agriculture, Trade,
+            Education, Services, Retail
+          </p>
+        </div>
+        <div id="city-info-nyeri" class="city-info">
+          <h4>Nyeri</h4>
+          <p><strong>Population:</strong> 125,357</p>
+          <p>
+            <strong>Major Tourist Attraction:</strong> Aberdare National Park,
+            Baden-Powell Museum
+          </p>
+          <p>
+            <strong>Modes of Transport:</strong> Matatus, Taxis, Boda Bodas,
+            Private Cars
+          </p>
+          <p>
+            <strong>Main Economic Activities:</strong> Agriculture (coffee
+            farming), Trade, Services, Education, Retail
+          </p>
+        </div>
+        <div id="city-info-meru" class="city-info">
+          <h4>Meru</h4>
+          <p><strong>Population:</strong> 240,900</p>
+          <p>
+            <strong>Major Tourist Attraction:</strong> Mount Kenya National Park
+            (portion), Meru National Park
+          </p>
+          <p>
+            <strong>Modes of Transport:</strong>
+            <strong>Matatus, Taxis, Boda Bodas, Private Cars</strong>
+          </p>
+          <p>
+            <strong>Main Economic Activities:</strong> Agriculture (tea
+            farming), Trade, Tourism, Services, Retail
+          </p>
+        </div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><span class="dot"></span> Towns (Dot)</div>
+        <div class="legend-item">
+          <span class="square"></span> Cities (Square)
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var map = L.map("map").setView([-1.2921, 36.8219], 6);
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 18,
+        }).addTo(map);
+
+        var locations = [
+          { name: "Nairobi", latlng: [-1.2921, 36.8219], type: "city" },
+          { name: "Mombasa", latlng: [-4.0435, 39.6682], type: "city" },
+          { name: "Kisumu", latlng: [-0.0917, 34.7677], type: "city" },
+          { name: "Nakuru", latlng: [-0.3031, 36.08], type: "city" },
+          { name: "Eldoret", latlng: [0.5204, 35.2699], type: "town" },
+          { name: "Thika", latlng: [-1.0396, 37.0797], type: "town" },
+          { name: "Malindi", latlng: [-3.2175, 40.119], type: "town" },
+          { name: "Kitale", latlng: [1.0151, 35.0067], type: "town" },
+          { name: "Garissa", latlng: [-0.4523, 39.6461], type: "town" },
+          { name: "Kakamega", latlng: [0.2829, 34.7523], type: "town" },
+          { name: "Nyeri", latlng: [-0.4249, 36.9513], type: "town" },
+          { name: "Meru", latlng: [0.0464, 37.6555], type: "town" },
+        ];
+
+        var icons = {
+          city: L.divIcon({
+            className: "custom-icon square",
+            iconSize: [25, 25],
+            iconAnchor: [12, 12],
+          }),
+          town: L.divIcon({
+            className: "custom-icon dot",
+            iconSize: [10, 10],
+            iconAnchor: [5, 5],
+          }),
+        };
+
+        locations.forEach(function (location) {
+          var marker = L.marker(location.latlng, {
+            icon: icons[location.type],
+          }).addTo(map);
+
+          marker.bindPopup(`<b>${location.name}</b><br>Click to view details`);
+
+          marker.on("click", function () {
+            var cityInfos = document.querySelectorAll(".city-info");
+            cityInfos.forEach(function (cityInfo) {
+              cityInfo.classList.remove("active");
+            });
+
+            var cityInfoElement = document.getElementById(
+              `city-info-${location.name.toLowerCase()}`
+            );
+            if (cityInfoElement) {
+              cityInfoElement.classList.add("active");
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
